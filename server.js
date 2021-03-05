@@ -4,10 +4,11 @@ var express = require('express');
 var app = express();
 var axios = require('axios').default;
 var randomNumber = require("random-number-csprng");
-
 var balance = 0;
 var address = "";
-var rpc_url = "http://127.0.0.1:22223/json_rpc";
+
+//fill this
+var rpc_url = 'your wallet rpc url';
 
 //https://steemit.com/utopian-io/@prodicode/how-to-use-ejs-displaying-data-from-nodejs-in-html
 app.set("view engine", "ejs");
