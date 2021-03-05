@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CryptoCoin ガチャ</title>
 
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -14,18 +13,19 @@
             line-height: 0.5cm;
             color: gainsboro;
             word-wrap: break-word;
+            overflow-wrap: break-word;
         }
         h1 {
             font-weight: bold;
-            font-size: 4vw;
+            font-size: 40px;
         }
         div {
-            font-size: 2vw;
+            font-size: 15px;
         }
         .submit {
             background-color: black;
-            border-radius: 0.5vw;
-            border: 2vw solid white;
+            border-radius: 12px;
+            border: 2px solid white;
         }
     </style>
 </head>
@@ -33,9 +33,7 @@
     <h1>CryptoCoin ガチャ</h1>
 
     <div>
-        Wallet Address
-        <br>
-        <%= address %>
+        Wallet Address : <%= address %>
     </div>
     <br>
     <div>
