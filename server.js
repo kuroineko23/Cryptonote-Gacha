@@ -4,11 +4,13 @@ var express = require('express');
 var app = express();
 var axios = require('axios').default;
 var randomNumber = require("random-number-csprng");
+
 var balance = 0;
 var address = "";
 
 //fill this
 var rpc_url = 'your wallet rpc url';
+var coin_ticker = "CRYPTO";
 
 //https://steemit.com/utopian-io/@prodicode/how-to-use-ejs-displaying-data-from-nodejs-in-html
 app.set("view engine", "ejs");
@@ -116,7 +118,7 @@ async function doTransfer2(wallet_target, luck, prize, currentBalance, res)
     });
 
     axios.post(rpc_url, data, config).then(resp => {
-        res.render('result', { number: luck, result: resp.data.result.amount/1000000000000 + " CRYPTO!", txhash: "txhash : " + resp.data.result.tx_hash, txkey: "txkey : " + resp.data.result.tx_key });
+        res.render('result', { number: luck, result: resp.data.result.amount/1000000000000 + " " + coin_ticker + "!", txhash: "txhash : " + resp.data.result.tx_hash, txkey: "txkey : " + resp.data.result.tx_key });
     }).catch(error => {
         console.log(error);
         console.log("Error");
@@ -143,7 +145,7 @@ app.post('/do_gacha', async (req, res) => {
                     doTransfer1(wallet_target, luck, 3, res);
                     break;
                 default:
-                    res.render('result', { number: luck, result: "0 CRYPTO!", txhash : "", txkey: ""});
+                    res.render('result', { number: luck, result: "0" + " " + coin_ticker + "!", txhash : "", txkey: ""});
             }
         }).catch(error => {
             console.log(error);
