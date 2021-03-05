@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CryptoCoin ガチャ</title>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Shippori Mincho B1', serif;
+            text-align: center;
+            line-height: 0.5cm;
+            color: gainsboro;
+        }
+        h1 {
+            font-weight: bold;
+            font-size: 40px;
+        }
+        div {
+            font-size: 16px;
+        }
+        .submit {
+            background-color: black;
+            border-radius: 12px;
+            border: 2px solid white;
+        }
+    </style>
+</head>
+<body bgcolor="black">
+    <h1>CryptoCoin ガチャ</h1>
+
+    <div>
+        Wallet Address : <%= address %>
+    </div>
+    <br>
+    <div>
+        Current wallet balance : <%= balance %>
+    </div>
+    <br>
+    <div>
+        <table align="center">
+            <tr>
+                <td>Reward</td>
+                <td>Chance</td>
+            </tr>
+            <tr>
+                <td>10% of total balance</td>
+                <td>0.1% (0-999)</td>
+            </tr>
+            <tr>
+                <td>1% of total balance</td>
+                <td>6% (1000-60999)</td>
+            </tr>
+            <tr>
+                <td>0.01 CRYPTO</td>
+                <td>45% (61000-510999)</td>
+            </tr>
+            <tr>
+                <td>None</td>
+                <td>48.9% (511000 - 1000000)</td>
+            </tr>
+        </table>
+    </div>
+    <br>
+    <div>
+        Input your wallet <b>PRIMARY ADDRESS</b> in the textbox below
+    </div>
+    <br>
+    <div>
+        <form action="/do_gacha" method="POST">
+            <input id="wallet_address" name="wallet_address" type="text" size="150" />
+            <input name="submitBtn" type="submit" class="submit" value="Gacha!" />
+        </form>
+    </div>
+    <br>
+    <br>
+    <div>
+        Code and Design by <a href="https://github.com/kuroineko23" target="_blank">kuroineko23</a>
+    </div>
+</body>
+</html>
