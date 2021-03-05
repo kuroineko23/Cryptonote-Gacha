@@ -5,6 +5,7 @@ Homepage is in public folder
 Zero effort
 
 How to use :
+
 0. Clone this repo
 1. Create new wallet
 2. Make a new subaddress (Although it won't be use for anything)
