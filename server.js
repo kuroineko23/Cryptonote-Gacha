@@ -9,7 +9,7 @@ var balance = 0;
 var address = "";
 
 //fill this
-var rpc_url = 'your wallet rpc url';
+var rpc_url = 'http://127.0.0.1:22223/json_rpc';
 var coin_ticker = "CRYPTO";
 
 //https://steemit.com/utopian-io/@prodicode/how-to-use-ejs-displaying-data-from-nodejs-in-html
@@ -82,10 +82,10 @@ async function doTransfer2(wallet_target, luck, prize, currentBalance, res)
     switch(prize)
     {
         case 1:
-            transferAmount = currentBalance * 0.1;
+            transferAmount = Math.round(currentBalance/10);
             break;
         case 2:
-            transferAmount = currentBalance * 0.01;
+            transferAmount = Math.round(currentBalance/100);
             break;
         case 3:
             transferAmount = 10000000000;
@@ -118,6 +118,7 @@ async function doTransfer2(wallet_target, luck, prize, currentBalance, res)
     });
 
     axios.post(rpc_url, data, config).then(resp => {
+        console.log(wallet_target.slice((wallet_target.length)-10, (wallet_target.length)), resp.data.result.amount, resp.data.result.tx_hash);
         res.render('result', { number: luck, result: resp.data.result.amount/1000000000000 + " " + coin_ticker + "!", txhash: "txhash : " + resp.data.result.tx_hash, txkey: "txkey : " + resp.data.result.tx_key });
     }).catch(error => {
         console.log(error);
