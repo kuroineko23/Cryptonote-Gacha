@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>CryptoCoin ガチャ</title>
-
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1&display=swap" rel="stylesheet">
     <style>
@@ -20,18 +19,28 @@
             font-size: 40px;
         }
         div {
-            font-size: 15px;
+            font-size: 18px;
         }
         .submit {
             background-color: black;
             border-radius: 12px;
             border: 2px solid white;
         }
+        .text {
+            color: black;
+        }
+        table {
+            border-spacing: 0cm;
+        }
+        td {
+            border: 1px solid white;
+            padding: 8px;
+        }
     </style>
 </head>
 <body bgcolor="black">
     <h1>CryptoCoin ガチャ</h1>
-
+    <br>
     <div>
         Wallet Address : <%= address %>
     </div>
@@ -71,9 +80,32 @@
     <br>
     <div>
         <form action="/do_gacha" method="POST">
-            <input id="wallet_address" name="wallet_address" type="text" />
+            <input id="wallet_address" name="wallet_address" type="text" class="text" />
             <input name="submitBtn" type="submit" class="submit" value="Gacha!" />
         </form>
+    </div>
+    <br>
+    <br>
+    <div>
+        Transaction history
+        <br>
+        <br>
+        <table align="center">
+            <tr>
+                <td>Address</td>
+                <td>Date</td>
+                <td>txHash</td>
+                <td>Amount</td>
+            </tr>
+            <% for(var i = 0; i < historyTx.length; i++) { %>
+                <tr>
+                    <td><%= historyTx[i].address %></td>
+                    <td><%= historyTx[i].date %></td>
+                    <td><%= historyTx[i].txHash %></td>
+                    <td><%= historyTx[i].amount %> <%= ticker %></td>
+                </tr>
+            <% } %>
+        </table>
     </div>
     <br>
     <br>

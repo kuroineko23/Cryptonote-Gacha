@@ -1,51 +1,42 @@
 //https://www.tutorialspoint.com/nodejs/nodejs_express_framework.htm
-
 var express = require('express');
 var app = express();
 var axios = require('axios').default;
 var randomNumber = require("random-number-csprng");
+const mongoose = require('mongoose');
 
 var balance = 0;
 var address = "";
 
 //fill this
 var rpc_url = 'http://127.0.0.1:22223/json_rpc';
-var coin_ticker = "CRYPTO";
+var coin_ticker = 'CRYPTO';
+var mongoDB_url = 'mongodb://127.0.0.1:27017/cryptogacha';
 
 //https://steemit.com/utopian-io/@prodicode/how-to-use-ejs-displaying-data-from-nodejs-in-html
 app.set("view engine", "ejs");
 app.set("views", __dirname + "/public");
 app.use(express.urlencoded({extended: true}));
 
-app.get('/', async (req, res) => {
-    const config = {
-        method: 'POST',
-        responseType: 'json',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    };
-    const data = JSON.stringify({
-        jsonrpc: "2.0",
-        id: "0",
-        method: "get_balance",
-        params: {
-            account_index: 0
-        }
-    });
+//https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/mongoose
+var connection = mongoose.connect(mongoDB_url, {useNewUrlParser: true, useUnifiedTopology: true}, function(error){
+    if(error){
+        console.log("MongoDB connection error");
+    } else {
+        console.log("MongoDB connection success");
+    }
+});
 
-    axios.post(rpc_url, data, config).then(resp => {
-        address = resp.data.result.per_subaddress[0].address;
-        balance = resp.data.result.per_subaddress[0].unlocked_balance/1000000000000;
-        res.render('index', { balance: balance, address: address })
-        console.log("Success");
-    }).catch(error => {
-        console.log(error);
-        res.render('result', { number: "", result: "Internal server error occured, please try again later!", txhash : "", txkey: ""});
-        console.log("Error");
-    });
-})
+var historySchema = new mongoose.Schema({
+    address: String,
+    date: Date,
+    txHash: String,
+    amount: String,
+    createdAt: { type: Date, expires: '120m', default: Date.now }
+});
+var historyTx = mongoose.model('History', historySchema);
 
+//function
 async function doTransfer1(wallet_target, luck, prize, res)
 {
     var luck = luck;
@@ -117,19 +108,67 @@ async function doTransfer2(wallet_target, luck, prize, currentBalance, res)
         }
     });
 
+    //https://stackoverflow.com/questions/14597241/setting-expiry-time-for-a-collection-in-mongodb-using-mongoose
     axios.post(rpc_url, data, config).then(resp => {
-        console.log(wallet_target.slice((wallet_target.length)-10, (wallet_target.length)), resp.data.result.amount, resp.data.result.tx_hash);
-        res.render('result', { number: luck, result: resp.data.result.amount/1000000000000 + " " + coin_ticker + "!", txhash: "txhash : " + resp.data.result.tx_hash, txkey: "txkey : " + resp.data.result.tx_key });
+        historyTx.create({
+            address: "..." + wallet_target.slice((wallet_target.length-10), (wallet_target.length-1)),
+            date: new Date(new Date().toJSON()).toUTCString(),
+            txHash: resp.data.result.tx_hash,
+            amount: resp.data.result.amount/100000000000
+        }, function (err){
+            if(err){
+                console.log(err);
+            }
+        });
+        res.render('result', { number: luck, result: resp.data.result.amount/100000000000 + " " + coin_ticker + "!", txhash: "txhash : " + resp.data.result.tx_hash, txkey: "txkey : " + resp.data.result.tx_key });
     }).catch(error => {
         console.log(error);
         console.log("Error");
         res.render('result', { number: "", result: "Internal server error occured, please try again later!", txhash : "", txkey: ""});
     });
 }
+
+//routes
+app.get('/', async (req, res) => {
+    const config = {
+        method: 'POST',
+        responseType: 'json',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    };
+    const data = JSON.stringify({
+        jsonrpc: "2.0",
+        id: "0",
+        method: "get_balance",
+        params: {
+            account_index: 0
+        }
+    });
+
+    axios.post(rpc_url, data, config).then(resp => {
+        address = resp.data.result.per_subaddress[0].address;
+        balance = resp.data.result.per_subaddress[0].unlocked_balance/1000000000000;
+        historyTx.find({}, function(error, data){
+            if(error){
+                console.log(error);
+            } else {
+                res.render('index', { balance: balance, address: address, historyTx: data, ticker: coin_ticker })
+            }
+        })
+        console.log("Success");
+    }).catch(error => {
+        console.log(error);
+        res.render('result', { number: "", result: "Internal server error occured, please try again later!", txhash : "", txkey: ""});
+        console.log("Error");
+    });
+})
+
 app.post('/do_gacha', async (req, res) => {
 
     var wallet_target = req.body.wallet_address;
     var wallet_prefix = wallet_target.slice(0,4);
+    //find address in db first
     if(wallet_prefix.localeCompare("cash") == 0)
     {
         var credit = 0;
