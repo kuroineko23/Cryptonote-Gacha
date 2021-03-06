@@ -32,7 +32,7 @@ var historySchema = new mongoose.Schema({
     date: Date,
     txHash: String,
     amount: String,
-    createdAt: { type: Date, expires: '120m', default: Date.now }
+    createdAt: { type: Date, expires: '60m', default: Date.now }
 });
 var historyTx = mongoose.model('History', historySchema);
 
@@ -102,9 +102,9 @@ async function doTransfer2(wallet_target, luck, prize, currentBalance, res)
                 }
             ],
             priority : 0,
-            mixin : 0,
-            ring_size : 0,
-            unlock_time : 0,
+            mixin : 3,
+            ring_size : 10,
+            unlock_time : 3,
             get_tx_key : true
         }
     });
@@ -115,13 +115,13 @@ async function doTransfer2(wallet_target, luck, prize, currentBalance, res)
             address: "*****" + wallet_target.slice((wallet_target.length-11), (wallet_target.length)),
             date: new Date(new Date().toJSON()).toUTCString(),
             txHash: resp.data.result.tx_hash,
-            amount: resp.data.result.amount/100000000000
+            amount: resp.data.result.amount/1000000000000
         }, function (error){
             if(error){
                 console.log(error);
             }
         });
-        res.render('result', { number: luck, result: resp.data.result.amount/100000000000 + " " + coin_ticker + "!", txhash: "txhash : " + resp.data.result.tx_hash, txkey: "txkey : " + resp.data.result.tx_key });
+        res.render('result', { number: luck, result: resp.data.result.amount/1000000000000 + " " + coin_ticker + "!", txhash: "txhash : " + resp.data.result.tx_hash, txkey: "txkey : " + resp.data.result.tx_key });
     }).catch(error => {
         throwError(error, res);
     });
