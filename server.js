@@ -60,9 +60,7 @@ async function doTransfer1(wallet_target, luck, prize, res)
         const currentBalance = resp.data.result.per_subaddress[0].unlocked_balance;
         doTransfer2(wallet_target, luck, prize, currentBalance, res);
     }).catch(error => {
-        console.log(error);
-        console.log("Error");
-        res.render('result', { number: "", result: "Internal server error occured, please try again later!", txhash : "", txkey: ""});
+        throwError(error, res);
     });
 }
 
@@ -80,7 +78,10 @@ async function doTransfer2(wallet_target, luck, prize, currentBalance, res)
             break;
         case 3:
             transferAmount = 10000000000;
-            break;    
+            break;
+        case 4:
+            transferAmount = 1000000000;
+            break;       
     }
     const config = {
         method: 'POST',
@@ -111,21 +112,26 @@ async function doTransfer2(wallet_target, luck, prize, currentBalance, res)
     //https://stackoverflow.com/questions/14597241/setting-expiry-time-for-a-collection-in-mongodb-using-mongoose
     axios.post(rpc_url, data, config).then(resp => {
         historyTx.create({
-            address: "..." + wallet_target.slice((wallet_target.length-10), (wallet_target.length-1)),
+            address: "*****" + wallet_target.slice((wallet_target.length-11), (wallet_target.length)),
             date: new Date(new Date().toJSON()).toUTCString(),
             txHash: resp.data.result.tx_hash,
             amount: resp.data.result.amount/100000000000
-        }, function (err){
-            if(err){
-                console.log(err);
+        }, function (error){
+            if(error){
+                console.log(error);
             }
         });
         res.render('result', { number: luck, result: resp.data.result.amount/100000000000 + " " + coin_ticker + "!", txhash: "txhash : " + resp.data.result.tx_hash, txkey: "txkey : " + resp.data.result.tx_key });
     }).catch(error => {
-        console.log(error);
-        console.log("Error");
-        res.render('result', { number: "", result: "Internal server error occured, please try again later!", txhash : "", txkey: ""});
+        throwError(error, res);
     });
+}
+
+function throwError (error, res)
+{
+    console.log(error);
+    res.render('result', { number: "", result: "Internal server error occured, please try again later!", txhash : "", txkey: ""});
+    console.log("Error");
 }
 
 //routes
@@ -158,9 +164,7 @@ app.get('/', async (req, res) => {
         })
         console.log("Success");
     }).catch(error => {
-        console.log(error);
-        res.render('result', { number: "", result: "Internal server error occured, please try again later!", txhash : "", txkey: ""});
-        console.log("Error");
+        throwError(error, res);
     });
 })
 
@@ -171,25 +175,37 @@ app.post('/do_gacha', async (req, res) => {
     //find address in db first
     if(wallet_prefix.localeCompare("cash") == 0)
     {
-        var credit = 0;
-        randomNumber(0,1000000).then(luck => {
-            switch(true)
-            {
-                case luck < 1000:
-                    doTransfer1(wallet_target, luck, 1, res);
-                    break;
-                case luck < 61000:
-                    doTransfer1(wallet_target, luck, 2, res);
-                    break;
-                case luck < 511000:
-                    doTransfer1(wallet_target, luck, 3, res);
-                    break;
-                default:
-                    res.render('result', { number: luck, result: "0" + " " + coin_ticker + "!", txhash : "", txkey: ""});
+        var hidden_address = "*****" + wallet_target.slice((wallet_target.length-11), (wallet_target.length));
+        historyTx.find({address: hidden_address}, function(error, data) {
+            if(error){
+                throwError(error, res);
             }
-        }).catch(error => {
-            console.log(error);
-            res.render('result', { number: "", result: "Internal server error occured, please try again later!", txhash : "", txkey: ""});
+            if(!data.length){
+                var credit = 0;
+                randomNumber(0,1000000).then(luck => {
+                    switch(true)
+                    {
+                        case luck < 1000:
+                            doTransfer1(wallet_target, luck, 1, res);
+                            break;
+                        case luck < 61000:
+                            doTransfer1(wallet_target, luck, 2, res);
+                            break;
+                        case luck < 911000:
+                            doTransfer1(wallet_target, luck, 3, res);
+                            break;
+                        default:
+                            doTransfer1(wallet_target, luck, 4, res);
+                            break;
+                    }
+                }).catch(error => {
+                    throwError(error, res);
+                });
+            }
+            else
+            {
+                res.render('result', { number: "", result: "60 minutes hasn't passed since your last gacha!", txhash : "", txkey: ""});
+            }
         });
     }
     else
