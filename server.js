@@ -32,9 +32,11 @@ var historySchema = new mongoose.Schema({
     date: Date,
     txHash: String,
     amount: String,
-    createdAt: { type: Date, expires: '60m', default: Date.now }
 });
 var historyTx = mongoose.model('History', historySchema);
+
+//https://docs.mongodb.com/manual/tutorial/expire-data/
+historySchema.index({ "createdAt": 1 }, { expireAfterSeconds: 3600 });
 
 //function
 async function doTransfer1(wallet_target, luck, prize, res)
