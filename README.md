@@ -18,5 +18,5 @@ How to use :
 OR
 
 4. Get docker (https://docs.docker.com/engine/install/)
-5. sudo docker build -t kuroineko23/cryptocoingacha CryptoCoinGacha
-6. sudo docker run -p 8081:8081 --name crypto_gacha -m 512m --network="host" --detach kuroineko23/cryptocoingacha
+5. sudo docker build -t kuroineko23/cryptonotegacha Cryptonote-Gacha
+6. sudo docker run -p 8081:8081 --name crypto_gacha -m 512m --network="host" --detach kuroineko23/cryptonotegacha
