@@ -43,7 +43,6 @@ var ttlSchema = new mongoose.Schema({
     amount: String,
 });
 var ttlList = mongoose.model('TTL', ttlSchema);
-ttlSchema.index({ "createdAt": 1 }, { expireAfterSeconds: 3600 });
 
 //function
 async function doTransfer1(wallet_target, luck, prize, res)
