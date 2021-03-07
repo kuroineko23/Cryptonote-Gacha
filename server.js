@@ -9,9 +9,9 @@ var balance = 0;
 var address = "";
 
 //fill this
-var rpc_url = 'http://127.0.0.1:22223/json_rpc';
-var coin_ticker = 'CRYPTO';
-var mongoDB_url = 'mongodb://127.0.0.1:27017/cryptogacha';
+var rpc_url = '';
+var coin_ticker = '';
+var mongoDB_url = '';
 
 //https://steemit.com/utopian-io/@prodicode/how-to-use-ejs-displaying-data-from-nodejs-in-html
 app.set("view engine", "ejs");
@@ -36,7 +36,14 @@ var historySchema = new mongoose.Schema({
 var historyTx = mongoose.model('History', historySchema);
 
 //https://docs.mongodb.com/manual/tutorial/expire-data/
-historySchema.index({ "createdAt": 1 }, { expireAfterSeconds: 3600 });
+var ttlSchema = new mongoose.Schema({
+    address: String,
+    date: Date,
+    txHash: String,
+    amount: String,
+});
+var ttlList = mongoose.model('TTL', ttlSchema);
+ttlSchema.index({ "createdAt": 1 }, { expireAfterSeconds: 3600 });
 
 //function
 async function doTransfer1(wallet_target, luck, prize, res)
@@ -123,6 +130,16 @@ async function doTransfer2(wallet_target, luck, prize, currentBalance, res)
                 console.log(error);
             }
         });
+        ttlList.create({
+            address: "*****" + wallet_target.slice((wallet_target.length-11), (wallet_target.length)),
+            date: new Date(new Date().toJSON()).toUTCString(),
+            txHash: resp.data.result.tx_hash,
+            amount: resp.data.result.amount/1000000000000
+        }, function (error){
+            if(error){
+                console.log(error);
+            }
+        });
         res.render('result', { number: luck, result: resp.data.result.amount/1000000000000 + " " + coin_ticker + "!", txhash: "txhash : " + resp.data.result.tx_hash, txkey: "txkey : " + resp.data.result.tx_key });
     }).catch(error => {
         throwError(error, res);
@@ -157,7 +174,7 @@ app.get('/', async (req, res) => {
     axios.post(rpc_url, data, config).then(resp => {
         address = resp.data.result.per_subaddress[0].address;
         balance = resp.data.result.per_subaddress[0].unlocked_balance/1000000000000;
-        historyTx.find({}, function(error, data){
+        historyTx.find({}, {sort: '-date'}, function(error, data){
             if(error){
                 console.log(error);
             } else {
@@ -178,7 +195,7 @@ app.post('/do_gacha', async (req, res) => {
     if(wallet_prefix.localeCompare("cash") == 0)
     {
         var hidden_address = "*****" + wallet_target.slice((wallet_target.length-11), (wallet_target.length));
-        historyTx.find({address: hidden_address}, function(error, data) {
+        ttlList.find({address: hidden_address}, function(error, data) {
             if(error){
                 throwError(error, res);
             }
