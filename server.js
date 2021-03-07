@@ -174,7 +174,7 @@ app.get('/', async (req, res) => {
     axios.post(rpc_url, data, config).then(resp => {
         address = resp.data.result.per_subaddress[0].address;
         balance = resp.data.result.per_subaddress[0].unlocked_balance/1000000000000;
-        historyTx.find({}, function(error, data){
+        historyTx.find({}, null, {"sort": {date: -1}}, function(error, data){
             if(error){
                 console.log(error);
             } else {
