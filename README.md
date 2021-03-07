@@ -9,13 +9,16 @@ Zero effort
 
 # How to use
 
-0. Clone this repo (git clone https://github.com/kuroineko23/Cryptonote-Gacha/)
+0. Clone this repo
 1. Create new wallet
 2. Make a new subaddress (Although it won't be use for anything)
 3. Run wallet-rpc without login (--disable-rpc-login)
-4. nodejs Cryptonote-Gacha/server.js
+4. Edit Cryptonote-Gacha/server.js
+5. nodejs Cryptonote-Gacha/server.js
+
 
 OR
+
 
 4. Get docker (https://docs.docker.com/engine/install/)
 5. sudo docker build -t kuroineko23/cryptonotegacha Cryptonote-Gacha
