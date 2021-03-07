@@ -11,7 +11,7 @@ Zero effort
 
 0. Clone this repo
 1. Create new wallet
-2. Install mongodb
+2. Install mongodb (https://docs.mongodb.com/manual/administration/install-community/)
 3. Make a new subaddress (Although it won't be use for anything)
 4. Run wallet-rpc without login (--disable-rpc-login)
 5. Edit Cryptonote-Gacha/server.js
