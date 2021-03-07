@@ -13,7 +13,7 @@ How to use :
 1. Create new wallet
 2. Make a new subaddress (Although it won't be use for anything)
 3. Run wallet-rpc without login (--disable-rpc-login)
-4. nodejs CryptoCoinGacha/server.js
+4. nodejs Cryptonote-Gacha/server.js
 
 OR
 
