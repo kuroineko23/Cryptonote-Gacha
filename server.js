@@ -178,7 +178,6 @@ app.get('/', async (req, res) => {
             if(error){
                 console.log(error);
             } else {
-                console.log(JSON.stringify(data));
                 res.render('index', { balance: balance, address: address, historyTx: data, ticker: coin_ticker })
             }
         });
