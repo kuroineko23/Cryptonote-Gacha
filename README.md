@@ -1,4 +1,4 @@
-# CryptoCoinGacha
+# Cryptonote-Gacha
  
 Edit the server.js for your own use
 
@@ -7,9 +7,9 @@ Homepage is in public folder
 Zero effort
 
 
-How to use :
+# How to use
 
-0. Clone this repo
+0. Clone this repo (git clone https://github.com/kuroineko23/Cryptonote-Gacha/)
 1. Create new wallet
 2. Make a new subaddress (Although it won't be use for anything)
 3. Run wallet-rpc without login (--disable-rpc-login)
