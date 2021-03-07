@@ -6,4 +6,6 @@ RUN npm install
 
 COPY . .
 EXPOSE 8081
+RUN echo "Asia/Tokyo" > /etc/timezone
+RUN dpkg-reconfigure -f noninteractive tzdata
 CMD [ "node", "server.js" ]
